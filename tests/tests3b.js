@@ -209,3 +209,80 @@ function validateAddressbook (test_name, schema_uri) {
 validateAddressbook("Explicit Schema", "http://example.com/addressbook.json");
 validateAddressbook("Referring Schema", "http://example.com/addressbook_ref.json");
 validateAddressbook("Extends Schema", "http://example.com/addressbook_extends.json");
+
+test("ObjectId Test", function () {
+    equal(env.validate("5303258583109200002afd9e", {
+        "type": ["ObjectId", "string"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^[0-9a-fA-F]{24}$"
+    }).errors.length, 0, "string may be objectId");
+
+    var id = {
+        _bsontype: "ObjectID",
+
+        toHexString: function(){
+            return "5303258583109200002afd9e";
+        }
+    };
+    equal(env.validate(id, {
+        "type": ["ObjectId", "string"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^[0-9a-fA-F]{24}$"
+    }).errors.length, 0, "string may be objectId");
+
+    notEqual(env.validate("fewfewfe", {
+        "type": ["ObjectId", "string"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^[0-9a-fA-F]{24}$"
+    }).errors.length, 0, "string may be objectId");
+
+    notEqual(env.validate({value: "fdewew"}, {
+        "type": ["ObjectId", "string"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^[0-9a-fA-F]{24}$"
+    }).errors.length, 0, "string may be objectId");
+    notEqual(env.validate([{value: "fdewew"}], {
+        "type": ["ObjectId", "string"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^[0-9a-fA-F]{24}$"
+    }).errors.length, 0, "string may be objectId");
+});
+
+
+
+
+
+test("DateTime", function () {
+    equal(env.validate("2014-02-18T09:45:22.262Z", {
+        "type": ["string", "Date"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$"
+    }).errors.length, 0, "string may be date");
+
+    equal(env.validate(new Date(), {
+        "type": ["string", "Date"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$"
+    }).errors.length, 0, "string may be date");
+
+    notEqual(env.validate(new Date("fewgerge"), {
+        "type": ["string", "Date"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$"
+    }).errors.length, 0, "string may be date");
+
+    notEqual(env.validate("gregrege", {
+        "type": ["string", "Date"],
+        "id": "http://example.com/objectid.json",
+        "$schema":"http://json-schema.org/draft-03/schema#",
+        "pattern": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$"
+    }).errors.length, 0, "string may be date");
+});
